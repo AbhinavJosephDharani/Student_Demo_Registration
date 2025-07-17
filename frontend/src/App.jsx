@@ -12,40 +12,44 @@ function App() {
     timeSlot: ''
   })
 
-  const [timeSlots, setTimeSlots] = useState([])
+  const [timeSlots, setTimeSlots] = useState([
+    { id: 1, date: '4/19/2070', time: '6:00 PM – 7:00 PM', max: 6, available: 6 },
+    { id: 2, date: '4/19/2070', time: '7:00 PM – 8:00 PM', max: 6, available: 6 },
+    { id: 3, date: '4/19/2070', time: '8:00 PM – 9:00 PM', max: 6, available: 6 },
+    { id: 4, date: '4/20/2070', time: '6:00 PM – 7:00 PM', max: 6, available: 6 },
+    { id: 5, date: '4/20/2070', time: '7:00 PM – 8:00 PM', max: 6, available: 6 },
+    { id: 6, date: '4/20/2070', time: '8:00 PM – 9:00 PM', max: 6, available: 6 }
+  ])
+
   const [message, setMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  // Fetch time slot availability on component mount
+  // API base URL - use localhost for development, deployed URL for production
+  const API_BASE_URL = process.env.NODE_ENV === 'production' 
+    ? 'https://student-demo-registration-api.vercel.app' 
+    : 'http://localhost:3000'
+
+  // Load time slots availability from backend on component mount
   useEffect(() => {
     fetchTimeSlots()
   }, [])
 
-  // API base URL for the deployed backend
-  const API_BASE = "https://student-demo-registration-api.vercel.app";
-
   const fetchTimeSlots = async () => {
     try {
-      const response = await fetch(`${API_BASE}/api/time-slots`)
-      if (response.ok) {
-        const slots = await response.json()
-        setTimeSlots(slots)
-        setMessage('') // Clear any previous messages
+      const response = await fetch(`${API_BASE_URL}/api/time-slots`)
+      const data = await response.json()
+      
+      if (response.ok && Array.isArray(data)) {
+        setTimeSlots(data)
       } else {
-        throw new Error('API response not ok')
+        console.error('Failed to fetch time slots:', response.status, data)
+        // Keep default slots if API fails
+        setMessage('⚠️ Backend connection issue. Using default time slots.')
       }
     } catch (error) {
       console.error('Error fetching time slots:', error)
-      // Fallback to hardcoded time slots if API fails
-      setTimeSlots([
-        { id: 1, date: '4/19/2070', time: '6:00 PM – 7:00 PM', available: 6 },
-        { id: 2, date: '4/19/2070', time: '7:00 PM – 8:00 PM', available: 6 },
-        { id: 3, date: '4/19/2070', time: '8:00 PM – 9:00 PM', available: 6 },
-        { id: 4, date: '4/20/2070', time: '6:00 PM – 7:00 PM', available: 6 },
-        { id: 5, date: '4/20/2070', time: '7:00 PM – 8:00 PM', available: 6 },
-        { id: 6, date: '4/20/2070', time: '8:00 PM – 9:00 PM', available: 6 }
-      ])
-      setMessage('⚠️ API temporarily unavailable. Using demo time slots. Registration will be simulated.')
+      // Keep default slots if API fails
+      setMessage('⚠️ Backend connection issue. Using default time slots.')
     }
   }
 
@@ -63,7 +67,7 @@ function App() {
     setMessage('')
 
     try {
-      const response = await fetch(`${API_BASE}/api/register`, {
+      const response = await fetch(`${API_BASE_URL}/api/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,9 +78,11 @@ function App() {
       const data = await response.json()
 
       if (response.ok) {
-        setMessage(data.message)
-        // Refresh time slots to get updated availability
+        setMessage('✅ Registration successful! You have been registered for the selected time slot.')
+        
+        // Update time slot availability
         await fetchTimeSlots()
+        
         // Reset form
         setFormData({
           studentId: '',
@@ -89,25 +95,16 @@ function App() {
         })
       } else {
         if (data.error === 'Student already registered') {
-          setMessage(`${data.message} Current registration: Time Slot ${data.existingRegistration.timeSlot}`)
+          setMessage(`This student ID is already registered. Current registration: Time Slot ${data.existingRegistration.timeSlot}`)
+        } else if (data.error === 'Time slot is full') {
+          setMessage('Time slot is full. Please select a different slot.')
         } else {
-          setMessage(data.error || 'Registration failed. Please try again.')
+          setMessage(`Registration failed: ${data.error}`)
         }
       }
     } catch (error) {
       console.error('Registration error:', error)
-      // Fallback: simulate successful registration
-      setMessage('✅ Registration submitted successfully! (Demo mode - API not available)')
-      // Reset form
-      setFormData({
-        studentId: '',
-        firstName: '',
-        lastName: '',
-        projectTitle: '',
-        email: '',
-        phone: '',
-        timeSlot: ''
-      })
+      setMessage('Registration failed. Please check your connection and try again.')
     } finally {
       setIsLoading(false)
     }
@@ -125,8 +122,15 @@ function App() {
           <h2>Register for Demo Time Slot</h2>
           
           {message && (
-            <div className={`message ${message.includes('successful') ? 'success' : 'error'}`}>
+            <div className={`message ${message.includes('successful') ? 'success' : message.includes('⚠️') ? 'warning' : 'error'}`}>
               {message}
+              <button 
+                onClick={() => setMessage('')} 
+                className="message-close"
+                style={{ float: 'right', background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', fontSize: '18px' }}
+              >
+                ×
+              </button>
             </div>
           )}
 
