@@ -1,0 +1,49 @@
+# Security headers
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options DENY
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Prevent access to sensitive files
+<Files "config/*">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files "includes/*">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Allow access to specific include files
+<Files "header.php">
+    Order allow,deny
+    Allow from all
+</Files>
+
+<Files "footer.php">
+    Order allow,deny
+    Allow from all
+</Files>
+
+# Prevent access to setup file in production
+<Files "setup.php">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Enable URL rewriting
+RewriteEngine On
+
+# Redirect to HTTPS (uncomment if using SSL)
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Prevent access to .git directory
+RedirectMatch 404 /\.git
+
+# Custom error pages
+ErrorDocument 404 /index.php
+ErrorDocument 500 /index.php 
