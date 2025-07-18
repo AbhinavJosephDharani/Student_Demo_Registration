@@ -1,218 +1,126 @@
-<<<<<<< HEAD
-# Student Demo Registration Frontend
+# Student Demo Registration System
 
-This is the frontend React application for the Student Demo Registration System.
+A full-stack web application for student demo registration with React frontend and Node.js backend.
 
-## Features
+## 🏗️ Project Structure
 
-- Student registration form with all required fields
-- Real-time time slot availability
-- Responsive design
-- Integration with backend API
-
-## API Endpoints
-
-The frontend connects to the backend API at: `https://student-demo-registration-api.vercel.app`
-
-- `GET /api/time-slots` - Get available time slots
-- `POST /api/register` - Register a student
-
-## Development
-
-```bash
-npm install
-npm run dev
 ```
-
-## Deployment
-
-This project is deployed on Vercel and automatically connects to the backend API. 
-=======
-# 🎓 Student Demo Registration System
-
-A modern, responsive web application for managing student project demonstration registrations. Built with PHP, MySQL, and modern web technologies.
-
-![PHP](https://img.shields.io/badge/PHP-8.1+-777BB4?style=for-the-badge&logo=php&logoColor=white)
-![MySQL](https://img.shields.io/badge/MySQL-8.0+-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
-![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
-
-## ✨ Features
-
-- **📝 Student Registration** - Easy-to-use form with real-time validation
-- **🎯 Time Slot Management** - 6 time slots with up to 6 students each
-- **🔄 Duplicate Handling** - Updates existing registrations automatically
-- **📊 Admin Dashboard** - View all registrations and statistics
-- **📱 Responsive Design** - Works perfectly on all devices
-- **🔒 Security** - Input validation, SQL injection prevention, XSS protection
-- **⚡ Real-time Updates** - Live availability tracking
+student-demo-registration-system/
+├── frontend/                    # React frontend application
+│   ├── src/                    # React source code
+│   ├── package.json            # Frontend dependencies
+│   └── vite.config.js          # Vite configuration
+├── student-demo-registration-api/  # Node.js backend API
+│   ├── index.js               # Main server file
+│   ├── models/                # MongoDB models
+│   └── package.json           # Backend dependencies
+├── vercel.json                # Vercel deployment configuration
+├── package.json               # Root package.json (monorepo)
+└── README.md                  # This file
+```
 
 ## 🚀 Quick Start
 
-### Option 1: Deploy to Vercel (Recommended)
+### Local Development
 
-1. **Fork this repository**
-2. **Set up a database** (PlanetScale recommended)
-3. **Deploy to Vercel**:
-   - Connect your GitHub repo to Vercel
-   - Add environment variables for database
-   - Deploy automatically
-
-See [VERCEL_DEPLOYMENT.md](VERCEL_DEPLOYMENT.md) for detailed instructions.
-
-### Option 2: Local Development
-
-1. **Clone the repository**:
+1. **Install dependencies:**
    ```bash
-   git clone https://github.com/yourusername/student-demo-registration.git
-   cd student-demo-registration
+   npm install
    ```
 
-2. **Set up database**:
-   ```sql
-   CREATE DATABASE student_demo_registration;
-   mysql -u your_username -p student_demo_registration < database/schema.sql
+2. **Set up environment variables:**
+   Create `.env` file in `student-demo-registration-api/`:
+   ```
+   MONGODB_URI=your_mongodb_connection_string
+   PORT=3000
    ```
 
-3. **Configure database**:
+3. **Run both frontend and backend:**
    ```bash
-   cp config/database.template.php config/database.php
-   # Edit config/database.php with your credentials
+   npm run dev
    ```
-
-4. **Start development server**:
+   
+   Or run separately:
    ```bash
-   php -S localhost:8000
+   # Backend only
+   npm run dev:backend
+   
+   # Frontend only  
+   npm run dev:frontend
    ```
 
-5. **Visit the application**:
-   - Main page: http://localhost:8000
-   - Admin panel: http://localhost:8000/admin.php
+4. **Access the application:**
+   - Frontend: http://localhost:5173
+   - Backend API: http://localhost:3000
 
-## 📋 Requirements
+## 🌐 Deployment
 
-- **PHP 7.4+** with PDO and MySQL extensions
-- **MySQL 5.7+** or compatible database
-- **Web server** (Apache/Nginx) or Vercel
+This project is configured for deployment on Vercel as a single repository with both frontend and backend.
 
-## 🏗️ Architecture
+### Vercel Configuration
 
-```
-📁 Project Structure
-├── 📄 index.php              # Main registration page
-├── 📄 admin.php              # Admin dashboard
-├── 📄 health.php             # Health check endpoint
-├── 📄 vercel.json            # Vercel configuration
-├── 📄 .gitignore             # Git ignore rules
-├── 📁 config/
-│   ├── 📄 database.php       # Database configuration
-│   └── 📄 database.template.php # Template for setup
-├── 📁 includes/
-│   ├── 📄 functions.php      # Helper functions
-│   ├── 📄 header.php         # Common header
-│   └── 📄 footer.php         # Common footer
-├── 📁 css/
-│   └── 📄 style.css          # Modern styling
-├── 📁 js/
-│   └── 📄 validation.js      # Client-side validation
-└── 📁 database/
-    └── 📄 schema.sql         # Database schema
-```
+The `vercel.json` file configures:
+- **Backend API**: Routes `/api/*` to the Node.js server
+- **Frontend**: Serves the React app for all other routes
+- **Build Process**: Automatically builds both frontend and backend
 
-## 🎯 Core Features
+### Environment Variables
 
-### Student Registration
-- **8-digit Student ID** validation
-- **Name validation** (alpha characters only)
-- **Email validation** with domain restrictions
-- **Phone format** validation (999-999-9999)
-- **Project title** required
-- **Time slot selection** with availability
+Set these in your Vercel project settings:
+- `MONGODB_URI`: Your MongoDB Atlas connection string
 
-### Admin Dashboard
-- **Complete student list** with all details
-- **Registration statistics**
-- **Time slot availability** overview
-- **Export-ready** data format
+## 📋 Features
 
-### Security Features
-- **Input sanitization** and validation
-- **SQL injection prevention** with prepared statements
-- **XSS protection**
-- **Environment variable** configuration
-- **File access restrictions**
+### Frontend
+- ✅ Student registration form
+- ✅ Real-time time slot availability
+- ✅ Form validation
+- ✅ Responsive design
+- ✅ Local storage fallback
 
-## 🔧 Configuration
+### Backend
+- ✅ RESTful API endpoints
+- ✅ MongoDB integration
+- ✅ Student registration
+- ✅ Time slot management
+- ✅ Duplicate prevention
+- ✅ Admin dashboard
 
-### Environment Variables (for Vercel)
+## 🔧 API Endpoints
 
-```bash
-DB_HOST=your-database-host
-DB_NAME=your-database-name
-DB_USER=your-database-username
-DB_PASS=your-database-password
-```
+- `GET /` - Health check
+- `GET /api/time-slots` - Get available time slots
+- `POST /api/register` - Register a student
+- `GET /api/admin/registrations` - Get all registrations (admin)
 
-### Database Schema
+## 🛠️ Technology Stack
 
-The system uses two main tables:
-- **`time_slots`** - Stores available time slots
-- **`students`** - Stores student registrations
+- **Frontend**: React, Vite, CSS3
+- **Backend**: Node.js, Express, MongoDB
+- **Database**: MongoDB Atlas
+- **Deployment**: Vercel
+- **Package Manager**: npm
 
-## 🧪 Testing
+## 📝 Development Notes
 
-1. **Test Registration**:
-   - Fill out the registration form
-   - Verify validation works
-   - Check database for new entry
+- The frontend uses localStorage as a fallback when the backend is unavailable
+- MongoDB connection is optimized for serverless environments
+- CORS is configured for cross-origin requests
+- All API responses include proper error handling
 
-2. **Test Admin Panel**:
-   - Visit `/admin.php`
-   - Verify all registrations display
-   - Check time slot availability
+## 🔍 Troubleshooting
 
-3. **Test Duplicate Registration**:
-   - Try registering with same Student ID
-   - Verify update functionality
+### MongoDB Connection Issues
+1. Ensure `MONGODB_URI` is set in environment variables
+2. Check MongoDB Atlas Network Access (add `0.0.0.0/0` for Vercel)
+3. Verify connection string format
 
-## 🚀 Deployment
+### Vercel Deployment Issues
+1. Check Vercel function logs for detailed error messages
+2. Ensure all environment variables are set
+3. Verify `vercel.json` configuration
 
-### Vercel Deployment
-- Automatic deployments from GitHub
-- Serverless PHP functions
-- Global CDN
-- Free tier available
-
-### Other Platforms
-- **Netlify** - Similar to Vercel
-- **Railway** - Full-stack platform
-- **Heroku** - Traditional hosting
-- **AWS** - Enterprise hosting
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## 📄 License
-
-This project is created for educational purposes. Feel free to use and modify as needed.
-
-## 🆘 Support
-
-- **Documentation**: [INSTALLATION.md](INSTALLATION.md)
-- **Vercel Deployment**: [VERCEL_DEPLOYMENT.md](VERCEL_DEPLOYMENT.md)
-- **Issues**: Create an issue on GitHub
-
-## 📊 Status
-
-![GitHub last commit](https://img.shields.io/github/last-commit/yourusername/student-demo-registration)
-![GitHub issues](https://img.shields.io/github/issues/yourusername/student-demo-registration)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/yourusername/student-demo-registration)
-
----
-
-**Made with ❤️ for educational purposes** 
->>>>>>> 98990f230d3f5d2c1fbd352988704faec16ca3f6
+### Local Development Issues
+1. Make sure both frontend and backend are running
+2. Check port conflicts (frontend: 5173, backend: 3000)
+3. Verify `.env` file exists in backend directory

@@ -1,0 +1,20 @@
+{
+  "name": "student-demo-registration-system",
+  "version": "1.0.0",
+  "description": "Student Demo Registration System with React frontend and Node.js backend",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "student-demo-registration-api"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd student-demo-registration-api && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "start": "cd student-demo-registration-api && npm start"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+} 

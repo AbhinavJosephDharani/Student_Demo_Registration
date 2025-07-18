@@ -1,27 +1,26 @@
 {
   "version": 2,
-<<<<<<< HEAD
   "builds": [
     {
-      "src": "index.js",
+      "src": "student-demo-registration-api/index.js",
       "use": "@vercel/node"
+    },
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/index.js"
+      "dest": "student-demo-registration-api/index.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "frontend/$1"
     }
-  ]
-} 
-=======
-  "functions": {
-    "api/*.php": {
-      "runtime": "vercel-php@0.6.0"
-    }
-  },
-  "routes": [
-    { "src": "/", "dest": "/api/index.php" }
   ]
 }
->>>>>>> 98990f230d3f5d2c1fbd352988704faec16ca3f6
