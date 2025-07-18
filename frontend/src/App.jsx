@@ -25,9 +25,9 @@ function App() {
   const [isLoading, setIsLoading] = useState(false)
   const [backendConnected, setBackendConnected] = useState(false)
 
-  // API base URL - use localhost for development, deployed URL for production
+  // API base URL - use localhost for development, same domain for production (monorepo)
   const API_BASE_URL = process.env.NODE_ENV === 'production' 
-    ? 'https://student-demo-registration-api.vercel.app' 
+    ? '' // Same domain for monorepo deployment
     : 'http://localhost:3000'
 
   // Load time slots availability from backend on component mount
