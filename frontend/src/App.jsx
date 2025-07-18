@@ -23,6 +23,7 @@ function App() {
 
   const [message, setMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [backendConnected, setBackendConnected] = useState(false)
 
   // API base URL - use localhost for development, deployed URL for production
   const API_BASE_URL = process.env.NODE_ENV === 'production' 
@@ -41,16 +42,34 @@ function App() {
       
       if (response.ok && Array.isArray(data)) {
         setTimeSlots(data)
+        setBackendConnected(true)
+        setMessage('')
       } else {
-        console.error('Failed to fetch time slots:', response.status, data)
-        // Keep default slots if API fails
-        setMessage('⚠️ Backend connection issue. Using default time slots.')
+        console.error('Backend not connected:', data)
+        setBackendConnected(false)
+        // Use localStorage fallback
+        updateTimeSlotAvailability()
+        setMessage('⚠️ Backend not connected. Using local storage mode.')
       }
     } catch (error) {
       console.error('Error fetching time slots:', error)
-      // Keep default slots if API fails
-      setMessage('⚠️ Backend connection issue. Using default time slots.')
+      setBackendConnected(false)
+      // Use localStorage fallback
+      updateTimeSlotAvailability()
+      setMessage('⚠️ Backend not connected. Using local storage mode.')
     }
+  }
+
+  const updateTimeSlotAvailability = () => {
+    const registrations = JSON.parse(localStorage.getItem('registrations') || '[]')
+    
+    setTimeSlots(prev => prev.map(slot => {
+      const registeredCount = registrations.filter(reg => reg.timeSlot === slot.id).length
+      return {
+        ...slot,
+        available: Math.max(0, slot.max - registeredCount)
+      }
+    }))
   }
 
   const handleInputChange = (e) => {
@@ -67,47 +86,82 @@ function App() {
     setMessage('')
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData)
-      })
-
-      const data = await response.json()
-
-      if (response.ok) {
-        setMessage('✅ Registration successful! You have been registered for the selected time slot.')
-        
-        // Update time slot availability
-        await fetchTimeSlots()
-        
-        // Reset form
-        setFormData({
-          studentId: '',
-          firstName: '',
-          lastName: '',
-          projectTitle: '',
-          email: '',
-          phone: '',
-          timeSlot: ''
+      if (backendConnected) {
+        // Try backend first
+        const response = await fetch(`${API_BASE_URL}/api/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData)
         })
-      } else {
-        if (data.error === 'Student already registered') {
-          setMessage(`This student ID is already registered. Current registration: Time Slot ${data.existingRegistration.timeSlot}`)
-        } else if (data.error === 'Time slot is full') {
-          setMessage('Time slot is full. Please select a different slot.')
+
+        const data = await response.json()
+
+        if (response.ok) {
+          setMessage('✅ Registration successful! You have been registered for the selected time slot.')
+          await fetchTimeSlots()
+          resetForm()
         } else {
-          setMessage(`Registration failed: ${data.error}`)
+          if (data.error === 'Student already registered') {
+            setMessage(`This student ID is already registered. Current registration: Time Slot ${data.existingRegistration.timeSlot}`)
+          } else if (data.error === 'Time slot is full') {
+            setMessage('Time slot is full. Please select a different slot.')
+          } else {
+            setMessage(`Registration failed: ${data.error}`)
+          }
         }
+      } else {
+        // Use localStorage fallback
+        const registrations = JSON.parse(localStorage.getItem('registrations') || '[]')
+        const existingRegistration = registrations.find(reg => reg.studentId === formData.studentId)
+        
+        if (existingRegistration) {
+          setMessage(`This student ID is already registered. Current registration: Time Slot ${existingRegistration.timeSlot}`)
+          setIsLoading(false)
+          return
+        }
+
+        const slotRegistrations = registrations.filter(reg => reg.timeSlot === parseInt(formData.timeSlot))
+        const selectedSlot = timeSlots.find(slot => slot.id === parseInt(formData.timeSlot))
+        
+        if (slotRegistrations.length >= selectedSlot.max) {
+          setMessage('Time slot is full. Please select a different slot.')
+          setIsLoading(false)
+          return
+        }
+
+        const newRegistration = {
+          ...formData,
+          timeSlot: parseInt(formData.timeSlot),
+          registeredAt: new Date().toISOString()
+        }
+        
+        registrations.push(newRegistration)
+        localStorage.setItem('registrations', JSON.stringify(registrations))
+
+        setMessage('✅ Registration successful! (Local storage mode)')
+        updateTimeSlotAvailability()
+        resetForm()
       }
     } catch (error) {
       console.error('Registration error:', error)
-      setMessage('Registration failed. Please check your connection and try again.')
+      setMessage('Registration failed. Please try again.')
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const resetForm = () => {
+    setFormData({
+      studentId: '',
+      firstName: '',
+      lastName: '',
+      projectTitle: '',
+      email: '',
+      phone: '',
+      timeSlot: ''
+    })
   }
 
   return (
@@ -115,6 +169,11 @@ function App() {
       <header className="app-header">
         <h1>Student Demo Registration System</h1>
         <p>Web Technology Class - Project Demonstrations</p>
+        <div className="backend-status">
+          <span className={`status-indicator ${backendConnected ? 'connected' : 'disconnected'}`}>
+            {backendConnected ? '🟢 Backend Connected' : '🔴 Backend Disconnected'}
+          </span>
+        </div>
       </header>
 
       <main className="app-main">
