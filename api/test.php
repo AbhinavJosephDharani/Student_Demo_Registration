@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?php
 header('Content-Type: text/html; charset=utf-8');
 ?>
@@ -114,3 +115,6 @@ header('Content-Type: text/html; charset=utf-8');
     </div>
 </body>
 </html> 
+=======
+<?php echo 'Test file created'; ?>
+>>>>>>> 98990f230d3f5d2c1fbd352988704faec16ca3f6

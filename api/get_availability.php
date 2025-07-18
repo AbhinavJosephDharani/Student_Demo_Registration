@@ -2,7 +2,11 @@
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 
+<<<<<<< HEAD
 require_once '../includes/functions.php';
+=======
+require_once 'includes/functions.php';
+>>>>>>> 98990f230d3f5d2c1fbd352988704faec16ca3f6
 
 try {
     $time_slots = getTimeSlots();

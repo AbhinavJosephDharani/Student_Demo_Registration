@@ -15,7 +15,11 @@ $status = [
 // Test database connection if credentials are available
 if (!empty($_ENV['DB_HOST'])) {
     try {
+<<<<<<< HEAD
         require_once '../config/database.php';
+=======
+        require_once 'config/database.php';
+>>>>>>> 98990f230d3f5d2c1fbd352988704faec16ca3f6
         $pdo = getDBConnection();
         $status['database'] = 'connected';
         
